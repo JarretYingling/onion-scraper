@@ -1,2 +1,2 @@
 # onion-scraper
-MongoDB news scraper from theonion.com
+MongoDB news scraper - theonion.com
