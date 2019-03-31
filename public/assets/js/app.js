@@ -5,7 +5,7 @@ $.getJSON("/articles", function(data) {
   // for each article
   for (var i = 0; i < data.length; i++) {
     // display info on page
-    $("#articles").append(`<div class="article"><p data-id="${data[i]._id}">${data[i].title}<button class="btn btn-primary p-1 mx-1">note</button><a href="${data[i].link}" target="_blank">link</a></p></div>`);
+    $("#articles").append(`<div class="article"><p data-id="${data[i]._id}"></a><button class="btn btn-note px-1 py-0 mx-1">note</button><a href="${data[i].link}" target="_blank">${data[i].title}</p></div>`);
   }
 });
 
