@@ -1,9 +1,11 @@
+"use strict";
+
 // get articles as json
 $.getJSON("/articles", function(data) {
   // for each article
   for (var i = 0; i < data.length; i++) {
     // display info on page
-    $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link + "</p>");
+    $("#articles").append(`<div class="article"><p data-id="${data[i]._id}">${data[i].title}<button class="btn btn-primary p-1 mx-1">note</button><a href="${data[i].link}" target="_blank">link</a></p></div>`);
   }
 });
 
@@ -15,7 +17,7 @@ $(document).on("click", "p", function() {
   // save id from p tag
   const thisId = $(this).attr("data-id");
 
-  // ajax call for Article
+  // ajax call for article
   $.ajax({
     method: "GET",
     url: "/articles/" + thisId
@@ -23,14 +25,15 @@ $(document).on("click", "p", function() {
     // add note to page
     .then(function(data) {
       console.log(data);
+      
       // title of article
-      $("#notes").append(`<h2>${data.title}</h2>`);
+      $("#notes").append(`<h5>${data.title}</h5>`);
       // input for new note title
-      $("#notes").append("<input id='titleinput' name='title' >");
+      $("#notes").append(`<input id="titleinput" name="title">`);
       // textarea for new note body
-      $("#notes").append("<textarea id='bodyinput' name='body'></textarea>");
+      $("#notes").append(`<textarea id="bodyinput" name="body"></textarea>`);
       // submit button for new note with id article saved to it
-      $("#notes").append(`<button data-id='${data._id}' id='savenote'>Save Note</button>`);
+      $("#notes").append(`<button data-id="${data._id}" id="savenote">Save Note</button>`);
 
       // if article has note
       if (data.note) {

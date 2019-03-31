@@ -1,5 +1,36 @@
+/* wireframe */
+html,
+body,
+header,
+nav,
+section,
+article,
+aside,
+footer,
+div,
+table,
+th,
+tr,
+td,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  padding: 0px;
+  border-width: 0px;
+  border-style: solid;
+  border-color: #000000;
+}
+
 body {
   background-color: #F2F6D0
+}
+
+#onion-pic {
+  width: 10%;
 }
 
 #wrapper {
@@ -14,6 +45,11 @@ body {
   overflow: auto;
   width: 60%;
   height: 700px;
+}
+
+.article {
+  padding: 10px;
+  border-width: 1px;
 }
 
 #notes {

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!-- reset.css -->
+  <link rel="stylesheet" href="/assets/css/reset.css">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <!-- local css -->
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <!-- page title -->
+  <title>Onion Scraper by Jarret Yingling</title>
+</head>
+
+<body>
+  <main id="main-container" class="container" role="main">
+
+    <section class="row">
+      <div class="col-12">
+        <img src="assets/img/onion.png" alt="onion" class="mx-auto d-block" id="onion-pic">
+        <h1 class="text-center">Onion Scraper by Jarret Yingling</h1>
+        <h4 class="text-center">news article scraper with:</h4>
+        <h6 class="text-center">Express routing, MongoDB database, Mongoose data model</h6>
+      </div><!-- end row 1 col 1 -->
+    </section><!-- end row 1 -->
+
+    <div id="wrapper">
+      <h4><i>Click an Onion article below to add a note to it</i></h4>
+      <!-- express-handlebars body injection -->
+      {{{body}}}
+      <div id="articles"></div>
+      <div id="notes"></div>
+    </div>
+
+  </main><!-- end main container -->
+
+  <footer class="container" role="content info">
+    <h6 class="text-center">Copyright &copy;</h6>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+
+</html>
