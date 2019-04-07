@@ -2,7 +2,7 @@
 
 const mongoose = require("mongoose");
 // connect to Mongo DB
-mongoose.connect("mongodb://localhost/onion-scraper", {
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/onion-scraper", {
   useNewUrlParser: true
 });
 
