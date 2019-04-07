@@ -105,13 +105,13 @@ const router = (app) => {
   });
 
   // GET route - return specific Article by id, populate with note
-  app.get("/articles/:id", function (req, res) {
+  app.get("/article/:id", function (req, res) {
     // find article with id parameter
     db.Articles.findOne({
         _id: req.params.id
       })
       // populate all notes associated with specific article
-      .populate("Notes")
+      .populate("notes")
       .then(function (dbArticle) {
         // if article with id found, send to client
         res.json(dbArticle);
@@ -123,7 +123,7 @@ const router = (app) => {
   });
 
   // POST route - save/update article's associated note
-  app.post("/articles/:id", function (req, res) {
+  app.post("/article/:articleId", function (req, res) {
     // create new note and pass req.body to entry
     db.Notes.create(req.body)
       .then(function (dbNote) {
@@ -132,15 +132,42 @@ const router = (app) => {
         // { new: true } tells query to return updated Article -- returns original by default
         // chain mongoose query promise with another `.then` that receives result of query
         return db.Articles.findOneAndUpdate({
-          _id: req.params.id
+          _id: req.params.articleId
         }, {
-          notes: dbNote._id
+          $push : {
+            notes: dbNote._id
+          }
         }, {
           new: true
         });
       })
       .then(function (dbArticle) {
         // if article updated, send to client
+        res.json("dbArticle");
+      })
+      .catch(function (err) {
+        // if error, send error to client
+        res.status(500).json(err);
+      });
+  });
+
+  // DELETE route - delete specific Note by id
+  app.delete("/note/:noteId", function (req, res) {
+    // delete note with id parameter
+    db.Notes.findOneAndDelete({
+        _id: req.params.noteId
+      })
+      .then(function (dbNote) {
+        return db.Articles.findOneAndUpdate({
+          _id: dbNote.article
+        }, {
+          $pull: {
+            notes: dbNote._id
+          }
+        });
+      })
+      .then(function(dbArticle){
+        //might be the note ???
         res.json(dbArticle);
       })
       .catch(function (err) {

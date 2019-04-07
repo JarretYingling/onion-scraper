@@ -1,24 +1,5 @@
 "use strict";
 
-/*
-// get articles as json
-$.getJSON("/articles", function(data) {
-  // for each article
-  for (let i = 0; i < data.length; i++) {
-    // display info on page
-    $("#articles").append(`
-      <div class="article">
-        <p>
-          <button data-id="${data[i]._id}" class="btn btn-note px-1 py-0 mx-1">+ note</button>
-          <a href="${data[i].link}" target="_blank">${data[i].title}</a>
-          <div>${data[i].summary}</div>
-        </p>
-      </div>
-    `);
-  }
-});
-*/
-
 // onClick .btn-note class
 $(document).on("click", ".btn-note", function() {
   // empty note section
@@ -29,27 +10,36 @@ $(document).on("click", ".btn-note", function() {
   // ajax call for article
   $.ajax({
     method: "GET",
-    url: "/articles/" + thisId
+    url: "/article/" + thisId
   })
     // add note to page
-    .then(function(data) {
-      console.log(data);
-      
+    .then(function(article) {
       // title of article
-      $("#notes").append(`<h5>${data.title}</h5>`);
+      $("#notes").append(`<h6>${article.title}</h6>`);
       // input for new note title
       $("#notes").append(`<input id="titleinput" name="title">`);
       // textarea for new note body
       $("#notes").append(`<textarea id="bodyinput" name="body"></textarea>`);
       // submit button for new note with id article saved to it
-      $("#notes").append(`<button data-id="${data._id}" id="savenote">Save Note</button>`);
+      $("#notes").append(`<button data-id="${article._id}" id="savenote" class="btn btn-save px-1 py-0 m-1">Save Note</button>`);
 
-      // if article has note
-      if (data.note) {
+      // if article has notes
+      if (article.notes.length > 0) {
+        const notes = article.notes;
+        $(`#notes-${article._id}`).empty();
+        notes.forEach(note => {
+          $(`#notes-${article._id}`).append(`
+            <div id="${note._id}" class="note">
+              <button data-id="${note._id}" class="btn btn-delete px-1 py-0 m-1">delete</button>  
+              <h6>${note.title}</h6>
+              <div>${note.body}</div>
+            </div>
+          `);
+        });
         // place note title in title input
-        $("#titleinput").val(data.note.title);
+        $("#titleinput").val(article.notes[0].title);
         // place note body in body textarea
-        $("#bodyinput").val(data.note.body);
+        $("#bodyinput").val(article.notes[0].body);
       }
     });
 });
@@ -57,28 +47,38 @@ $(document).on("click", ".btn-note", function() {
 // onClick savenote button
 $(document).on("click", "#savenote", function() {
   // get id associated with article from submit button
-  const thisId = $(this).attr("data-id");
-
+  const articleId = $(this).attr("data-id");
   // POST request to change note using inputs
   $.ajax({
     method: "POST",
-    url: "/articles/" + thisId,
+    url: `/article/${articleId}`,
     data: {
       // value from note title input
       title: $("#titleinput").val(),
       // value from note body textarea
-      body: $("#bodyinput").val()
+      body: $("#bodyinput").val(),
+      // article id
+      article: articleId
     }
   })
     // and then...
     .then(function(data) {
-      // log response
-      console.log(data);
       // empty notes section
       $("#notes").empty();
     });
-
-  // remove entered values from note input and textarea
-  $("#titleinput").val("");
-  $("#bodyinput").val("");
 });
+
+// onClick delete note button
+$(document).on("click", ".btn-delete", function () {
+  // get article id and associated note id
+  const noteId = $(this).attr("data-id");
+  // POST request to change note using inputs
+  $.ajax({
+      method: "DELETE",
+      url: `/note/${noteId}`
+    })
+    .then(function (data) {
+      $(`#${noteId}`).empty();
+      $("#notes").empty();
+    });
+  });

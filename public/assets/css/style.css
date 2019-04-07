@@ -52,6 +52,12 @@ body {
   border-width: 1px;
 }
 
+.note {
+  padding: 10px;
+  border-width: 1px;
+  margin: 1px 0px;
+}
+
 #notes {
   float: right;
   width: 30%;
