@@ -5,17 +5,17 @@ const mongoose = require("mongoose");
 // save reference to Schema constructor
 const Schema = mongoose.Schema;
 
-// use Schema constructor to create ew notesSchema object
+// use Schema constructor to create ew NotesSchema object
 // similar to Sequelize model
-const notesSchema = new Schema({
+const NotesSchema = new Schema({
   // set `title` as type String
   title: String,
   // set `body` as type String
   body: String
 });
 
-// mongoose model method creates model from notesSchema above
-const notes = mongoose.model("Note", notesSchema);
+// mongoose model method creates model from NotesSchema above
+const Notes = mongoose.model("Notes", NotesSchema);
 
-// export notes model
-module.exports = notes;
+// export Notes model
+module.exports = Notes;

@@ -1,0 +1,12 @@
+
+{{#each articles}}
+
+<div class="article">
+  <p>
+    <button data-id="{{this._id}}" class="btn btn-note px-1 py-0 mx-1">+ note</button>
+    <a href="{{this.link}}" target="_blank">{{this.title}}</a>
+    <div>{{this.summary}}</div>
+  </p>
+</div>
+
+{{/each}}

@@ -3,6 +3,6 @@
 // export object containing all models
 
 module.exports = {
-  articles: require("./articles"),
-  notes: require("./notes")
+  Articles: require("./Articles"),
+  Notes: require("./Notes")
 };

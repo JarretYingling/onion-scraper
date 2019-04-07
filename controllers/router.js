@@ -13,64 +13,90 @@ const cheerio = require("cheerio");
 // require models directory
 const db = require("../models");
 
-const path = require("path");
+// const path = require("path");
 
 // routes
 const router = (app) => {
 
-  // GET route - index.handlebars
-  app.get("/", (req, res) => {
-    // res.sendFile(path.join(__dirname, "../views", "index.html"));
-    res.render("index", {
-      // articles: articles
-    });
-  });
+  // GET route - scrape theonion.com and render articles with handlebars
+  app.get("/", function (req, res) {
 
-  // GET route - scrape theonion.com
-  app.get("/scrape", function (req, res) {
-    // Axios API request for html body
-    axios.get("http://www.theonion.com/").then(function (response) {
-      // load Axios API response (html body) into cheerio and save as $ for shorthand selector
-      const $ = cheerio.load(response.data);
-      // grab every h2 within an article tag, and do the following:
-      $("article header h1").each(function (i, element) {
-        // save empty result object
-        const result = {};
+    const titles = [];
 
-        // add text of every link as properties of `result` object
-        result.title = $(this)
-          .children("a")
-          .text();
-        // and href of every link as properties of `result` object
-        result.link = $(this)
-          .children("a")
-          .attr("href");
-
-        // create new MongoDB article using `result` object
-        db.articles.create(result)
-          .then(function (dbArticles) {
-            // view added result in console
-            console.log(dbArticles);
-          })
-          .catch(function (err) {
-            // if error, log it
-            console.log(err);
+    // get article titles
+    db.Articles.find({},{"_id": false, "title": true})
+      .then(function (articleTitles) {
+        Object.keys(articleTitles).forEach(function (item){
+          titles.push(articleTitles[item].title);
+        });
+        // Axios API request for html body
+        return axios.get("http://www.theonion.com/")
+          .then(function(htmlResponse){
+            return htmlResponse;
           });
+      })
+      .then(function (htmlResponse) {
+        // load Axios API response (html body) into cheerio and save as $ for shorthand selector
+        const $ = cheerio.load(htmlResponse.data);
+        const scrapedArticles = [];
+        // with every article tag, do the following:
+        $("article").each(function (i, element) {
+          // save empty result object
+          const scrapedArticle = {};
+          // add text of every link as title key of scrapedArticle object
+          scrapedArticle.title = $(this)
+            .children("header")
+            .children("h1")
+            .children("a")
+            .text();
+          // check for existing article title
+          if (titles.includes(scrapedArticle.title)) {
+            // do nothing, article already in database
+          } else {
+            // add href of every link as link key of scrapedArticle object
+            scrapedArticle.link = $(this)
+              .children("header")
+              .children("h1")
+              .children("a")
+              .attr("href");
+            // add first paragraph of every div div as summary key of scrapedArticle object
+            scrapedArticle.summary = $(this)
+              .children("div")
+              .children("div")
+              .children("p")
+              .text();
+            // push article into array
+            scrapedArticles.push(scrapedArticle);
+          }
+        })
+        return scrapedArticles;
+      })
+      .then(function(scrapedArticles){
+        // insert many scrapedArticles into database
+        db.Articles.insertMany(scrapedArticles)
+          .then(function(dbAddedArticles){
+            return dbAddedArticles;
+          });
+        // redirect to populate Articles
+        res.redirect("/articles");
+      })
+      .catch(function (err) {
+        // if error, send error to client
+        res.status(500).json(err);
       });
-
-      // send message to client
-      res.send("Scrape Complete");
-    });
   });
 
   // GET route - return all articles from db
   app.get("/articles", function (req, res) {
-    // find every document in articles collection
-    db.articles.find({})
-      .populate("notes")
+    // find all documents in articles collection
+    db.Articles.find({})
+      .populate("Notes")
       .then(function (dbArticles) {
         // if Articles found, send back to client
-        res.json(dbArticles);
+        // console.log(`dbArticles: ${dbArticles}`);
+        res.render("index", {
+          articles: dbArticles
+        });
       })
       .catch(function (err) {
         // if error, send error to client
@@ -81,11 +107,11 @@ const router = (app) => {
   // GET route - return specific Article by id, populate with note
   app.get("/articles/:id", function (req, res) {
     // find article with id parameter
-    db.articles.findOne({
+    db.Articles.findOne({
         _id: req.params.id
       })
       // populate all notes associated with specific article
-      .populate("notes")
+      .populate("Notes")
       .then(function (dbArticle) {
         // if article with id found, send to client
         res.json(dbArticle);
@@ -99,16 +125,16 @@ const router = (app) => {
   // POST route - save/update article's associated note
   app.post("/articles/:id", function (req, res) {
     // create new note and pass req.body to entry
-    db.notes.create(req.body)
+    db.Notes.create(req.body)
       .then(function (dbNote) {
         // if note created, find one Article with `_id` equal to `req.params.id`
         // update Article with new Note association
         // { new: true } tells query to return updated Article -- returns original by default
         // chain mongoose query promise with another `.then` that receives result of query
-        return db.articles.findOneAndUpdate({
+        return db.Articles.findOneAndUpdate({
           _id: req.params.id
         }, {
-          note: dbNote._id
+          notes: dbNote._id
         }, {
           new: true
         });

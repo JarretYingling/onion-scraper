@@ -1,20 +1,29 @@
 "use strict";
 
+/*
 // get articles as json
 $.getJSON("/articles", function(data) {
   // for each article
-  for (var i = 0; i < data.length; i++) {
+  for (let i = 0; i < data.length; i++) {
     // display info on page
-    $("#articles").append(`<div class="article"><p data-id="${data[i]._id}"></a><button class="btn btn-note px-1 py-0 mx-1">note</button><a href="${data[i].link}" target="_blank">${data[i].title}</p></div>`);
+    $("#articles").append(`
+      <div class="article">
+        <p>
+          <button data-id="${data[i]._id}" class="btn btn-note px-1 py-0 mx-1">+ note</button>
+          <a href="${data[i].link}" target="_blank">${data[i].title}</a>
+          <div>${data[i].summary}</div>
+        </p>
+      </div>
+    `);
   }
 });
+*/
 
-
-// onClick p tag
-$(document).on("click", "p", function() {
+// onClick .btn-note class
+$(document).on("click", ".btn-note", function() {
   // empty note section
   $("#notes").empty();
-  // save id from p tag
+  // save id from #data-id
   const thisId = $(this).attr("data-id");
 
   // ajax call for article
